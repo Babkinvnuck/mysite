@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ post.title }}</h1>
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 100%; border-radius: 0px; margin-bottom: 15px;">
+    {% endif %}
+	
+        <p>Просмотров: {{ post.views }}</p>
+		    <p>Лайков: {{ post.likes.count }}</p>
+
+    {% if user.is_authenticated %}
+		<form method="post" action="{% url 'blogs:post_like' post.pk %}" style="display: inline;">
+    {% csrf_token %}
+        <button type="submit" style="background-color: {% if liked %}#dc3545{% else %}#007bff{% endif %}; border: none; padding: 8px 15px; color: white; border-radius: 0px; cursor: pointer;">
+    {% if liked %}Убрать лайк{% else %}Нравится{% endif %}
+        </button>
+    </form>
+	{% else %}
+        <p><a href="{% url 'login' %}">Войдите</a>, чтобы поставить лайк.</p>
+	{% endif %}
+
+        <p>{{ post.blog.title }} — {{ post.created_at }}</p>
+        <div>{{ post.content|linebreaks }}</div>
+    {% if user == post.blog.owner %}
+        <p>
+            <a href="{% url 'blogs:post_update' post.pk %}">Редактировать</a>
+			|
+            <a href="{% url 'blogs:post_delete' post.pk %}" style="color: red;">Удалить</a>
+        </p>
+    {% endif %}
+
+
+{% if post.likes.all %}
+    <p style="margin-top: 10px; color: #666;">
+        Нравится:
+        {% for like in post.likes.all %}
+            {{ like.user.username }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+{% else %}
+    <p style="margin-top: 10px; color: #999;">Пока никто не лайкнул</p>
+{% endif %}
+
+<h2>Комментарии</h2>
+    <ul>
+    {% for comment in post.comments.all %}
+	   <li style="display: flex; gap: 10px;">
+    {% if comment.author_avatar %}
+        <img src="{{ comment.author_avatar }}" style="width: 30px; height: 30px; border-radius: 0%; object-fit: cover;">
+    {% else %}
+        <div style="width: 30px; height: 30px; border-radius: 0%; background-color: #ddd; flex-shrink: 0;"></div>
+    {% endif %}
+    <div>
+        <strong>{{ comment.author.username }}</strong> ({{ comment.created_at }}):
+        <p>{{ comment.text|linebreaks }}</p>
+        {% if user == comment.author %}
+            <p>
+                <a href="{% url 'blogs:comment_update' comment.pk %}">Редактировать</a>
+                |
+                <a href="{% url 'blogs:comment_delete' comment.pk %}" style="color: red;">Удалить</a>
+            </p>
+        {% endif %}
+    </div>
+</li>
+	{% empty %}
+		<li>Комментариев пока нет. Будьте первым!</li>
+	{% endfor %}
+
+	</ul>
+    {% if user.is_authenticated %}
+	
+	
+<h3>Добавить комментарий</h3>
+    <form method="post" action="{% url 'blogs:post_comment' post.pk %}">
+		{% csrf_token %}
+		{{ form.as_p }}
+		
+			<button type="submit">Отправить</button>
+	</form>
+	{% else %}
+		<p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий.</p>
+	{% endif %}
+{% endblock %}

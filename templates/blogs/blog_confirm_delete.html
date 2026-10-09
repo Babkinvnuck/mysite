@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Удалить блог «{{ blog.title }}»?</h1>
+<p>Это действие удалит блог вместе со всеми записями и комментариями. Это действие нельзя отменить.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #dc3545;">Да, удалить блог</button>
+    <a href="{{ blog.get_absolute_url }}" style="margin-left: 15px;">Отмена</a>
+</form>
+{% endblock %}

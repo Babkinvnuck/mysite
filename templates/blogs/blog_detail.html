@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if blog.image %}
+    <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 0px; vertical-align: middle; margin-right: 15px;">
+{% endif %}
+<h1 style="display: inline-block; vertical-align: middle;">{{ blog.title }}</h1>
+<p>{{ blog.description }}</p>
+<p>Автор: {{ blog.owner.username }}</p>
+
+<h2>Записи</h2>
+
+{% if user == blog.owner %}
+    <p>
+        <a href="{% url 'blogs:blog_edit' blog.slug %}">Редактировать блог</a>
+        |
+        <a href="{% url 'blogs:post_create' %}">Добавить запись</a>
+        |
+        <a href="{% url 'blogs:blog_delete' blog.slug %}" style="color: red;">Удалить блог</a>
+    </p>
+	
+<ul>
+    {% for post in posts %}
+        <li>
+            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            <small>{{ post.created_at }}</small>
+        </li>
+    {% empty %}
+        <li>В этом блоге пока нет записей.</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    /* Стили для главной страницы */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        border-radius: 0 !important;
+        min-height: 100vh !important;
+    }
+
+    .main-wrapper {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        background-color: #fafafa;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .content-area {
+        flex: 1;
+    }
+</style>
+
+<!-- Заголовок и ссылки для входа -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="margin: 0;">Все блоги</h1>
+
+    {% if user.is_authenticated %}
+        <div style="background-color: #f0f0f0;  padding: 8px 12px; border-radius: 8px;">
+            <a href="  {% url 'blogs:my_blogs' %}  " style="margin-right: 85px;  ">Мои блоги</a>
+            
+        </div>
+    {% endif %}
+</div>
+
+<!-- Две колонки: реклама слева, блоги справа -->
+<div class="main-wrapper">
+
+    <!-- Рекламная колонка -->
+    <div class="sidebar">
+        <h3>Реклама</h3>
+        <p>Здесь будет реклама.</p>
+        <!-- Сюда позже можно добавлять новые рекламные блоки -->
+    </div>
+
+    <!-- Основной контент: все блоги -->
+    <div class="content-area">
+        <ul>
+            {% for blog in blogs %}
+                <li style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    {% if blog.image %}
+                        <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="width: 60px; height: 60px; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 60px; height: 60px; background-color: #ddd;"></div>
+                    {% endif %}
+                    <div>
+                        <a href="{{ blog.get_absolute_url }}" style="font-size: 18px; font-weight: bold;">{{ blog.title }}</a>
+                        <br>
+                        <small>Автор: {{ blog.owner.username }} · Записей: {{ blog.posts.count }}</small>
+                    </div>
+                </li>
+            {% empty %}
+                <li>Пока нет ни одного блога. Создайте свой первый блог!</li>
+            {% endfor %}
+        </ul>
+
+        {% if is_paginated %}
+        <div style="margin-top: 20px; text-align: center;">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none;">← Предыдущая</a>
+            {% endif %}
+            <span style="margin: 0 10px;">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none;">Следующая →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
