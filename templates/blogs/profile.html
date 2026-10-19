@@ -15,4 +15,9 @@
     {{ profile_form.as_p }}
     <button type="submit">Сохранить аватар</button>
 </form>
+<p style="margin-top: 20px;">
+    <a href="{% url 'blogs:blog_create' %}">Создать блог</a> |
+    <a href="{% url 'blogs:post_create' %}">Новая запись</a> |
+    <a href="{% url 'blogs:my_blogs' %}">Мои блоги</a>
+</p>
 {% endblock %}

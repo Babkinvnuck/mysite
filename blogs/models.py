@@ -15,6 +15,14 @@ class Blog(models.Model):
     slug = models.SlugField("Слаг", unique=True, blank=True)
     description = models.TextField("Описание", blank=True)
     image = models.ImageField("Картинка", upload_to="blog_images/", blank=True, null=True)
+    REGION_CHOICES = [
+    ("africa", "Африка"),
+    ("australia", "Австралия"),
+    ("america", "Америка"),
+    ("europe", "Европа"),
+    ("antarctica", "Антарктика"),
+     ]
+    region = models.CharField("Тема", max_length=20, choices=REGION_CHOICES, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

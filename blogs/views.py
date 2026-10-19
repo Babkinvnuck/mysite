@@ -18,13 +18,17 @@ class BlogListView(ListView):
     context_object_name = "blogs"
     paginate_by = 10
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        region = self.request.GET.get("region")
+        if region:
+            queryset = queryset.filter(region=region)
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-        if user.is_authenticated:
-            context["my_blogs"] = Blog.objects.filter(owner=user)
+        context["current_region"] = self.request.GET.get("region", "")
         return context
-    
 
 class PostListView(ListView):
     model = Post

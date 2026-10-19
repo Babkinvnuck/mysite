@@ -4,18 +4,11 @@
 
 <style>
     /* Стили для главной страницы */
-    body {
-        margin: 0;
-        padding: 0;
-    }
-
     .container {
         max-width: 100% !important;
-        width: 100% !important;
         margin: 0 !important;
-        padding: 20px !important;
         border-radius: 0 !important;
-        min-height: 100vh !important;
+        padding: 20px !important;
     }
 
     .main-wrapper {
@@ -36,32 +29,67 @@
     .content-area {
         flex: 1;
     }
+
+    /* Стили для тематических блоков */
+    .theme-blocks {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .theme-block {
+        flex: 1;
+        background-color: #fff9c4;
+        padding: 15px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .theme-block a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+    }
+    .theme-block a:hover {
+        color: #555;
+    }
 </style>
 
-<!-- Заголовок и ссылки для входа -->
+<!-- Заголовок -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h1 style="margin: 0;">Все блоги</h1>
-
-    {% if user.is_authenticated %}
-        <div style="background-color: #f0f0f0;  padding: 8px 12px; border-radius: 8px;">
-            <a href="  {% url 'blogs:my_blogs' %}  " style="margin-right: 85px;  ">Мои блоги</a>
-            
-        </div>
-    {% endif %}
 </div>
 
-<!-- Две колонки: реклама слева, блоги справа -->
+<!-- Две колонки: реклама слева, контент справа -->
 <div class="main-wrapper">
 
     <!-- Рекламная колонка -->
     <div class="sidebar">
         <h3>Реклама</h3>
         <p>Здесь будет реклама.</p>
-        <!-- Сюда позже можно добавлять новые рекламные блоки -->
     </div>
 
-    <!-- Основной контент: все блоги -->
+    <!-- Основной контент -->
     <div class="content-area">
+
+        <!-- Тематические блоки -->
+        <div class="theme-blocks">
+            <div class="theme-block">
+                <a href="?region=africa">Африка</a>
+            </div>
+            <div class="theme-block">
+                <a href="?region=australia">Австралия</a>
+            </div>
+            <div class="theme-block">
+                <a href="?region=america">Америка</a>
+            </div>
+            <div class="theme-block">
+                <a href="?region=europe">Европа</a>
+            </div>
+            <div class="theme-block">
+                <a href="?region=antarctica">Антарктика</a>
+            </div>
+        </div>
+
+        <!-- Список блогов -->
         <ul>
             {% for blog in blogs %}
                 <li style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
@@ -81,6 +109,7 @@
             {% endfor %}
         </ul>
 
+        <!-- Пагинация -->
         {% if is_paginated %}
         <div style="margin-top: 20px; text-align: center;">
             {% if page_obj.has_previous %}
@@ -92,6 +121,7 @@
             {% endif %}
         </div>
         {% endif %}
+
     </div>
 
 </div>

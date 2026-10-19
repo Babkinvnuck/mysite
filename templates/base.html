@@ -17,11 +17,24 @@
 		background-size: cover;
 		background-position: center;
 		background-color: rgba(0, 0, 0, 0.4);
-		padding: 120px 20px;
+		padding: 60px 20px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
+	}
+	.logo {
+		font-family: 'Georgia', 'Times New Roman', serif;
+		font-size: 36px;
+		font-weight: bold;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		color: #ffcc00;
+		text-decoration: none;
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		white-space: nowrap;
 	}
 
     nav a {
@@ -112,19 +125,108 @@
         background-color: #f9f9f9;
         border-radius: 5px;
     }
-</style>
-</head>
-<body>
-    <nav>
-    <a href="{% url 'blogs:blog_list' %}">The history of our planet</a>
-    {% if user.is_authenticated %}
-        <a href="{% url 'blogs:profile' %}">Личный кабинет</a>
-    {% else %}
-        <a href="{% url 'login' %}">Войти</a>
-        <a href="{% url 'accounts:register' %}">Регистрация</a>
-    {% endif %}
-</nav>
+	.menu-wrap {
+    position: relative;
+    z-index: 100;
+}
 
+.menu-toggle {
+    display: none;
+}
+
+.menu-icon {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.menu-icon span {
+    background: white;
+    height: 3px;
+    width: 25px;
+    margin: 3px 0;
+    border-radius: 2px;
+}
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: #444;
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.menu-dropdown a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 4px;
+}
+
+.menu-dropdown a:hover {
+    background-color: #555;
+}
+
+.menu-dropdown form {
+    margin: 0;
+    padding: 8px 10px;
+}
+
+.menu-dropdown button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.menu-dropdown button:hover {
+    text-decoration: underline;
+}
+
+.menu-toggle:checked ~ .menu-dropdown {
+    display: block;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+    <div style="position: relative; width: 100%; display: flex; justify-content: flex-end; align-items: center;">
+        <a href="{% url 'blogs:blog_list' %}" class="logo">The history of our planet</a>
+
+        {% if user.is_authenticated %}
+        <div class="menu-wrap">
+            <input type="checkbox" class="menu-toggle" id="menu-check">
+            <label for="menu-check" class="menu-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+            <div class="menu-dropdown">
+                <a href="{% url 'blogs:my_blogs' %}">Мои блоги</a>
+                <a href="{% url 'blogs:profile' %}">Личный кабинет</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Выйти</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" style="color: white;">Войти</a>
+        {% endif %}
+    </div>
+</nav>
     <div class="container">
     {% block content %}{% endblock %}
 </div>
