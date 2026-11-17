@@ -2,128 +2,64 @@
 
 {% block content %}
 
-<style>
-    /* Стили для главной страницы */
-    .container {
-        max-width: 100% !important;
-        margin: 0 !important;
-        border-radius: 0 !important;
-        padding: 20px !important;
-    }
+{% if user.is_authenticated %}
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <a href="{% url 'blogs:my_blogs' %}" style="margin-right: 15px;">Мои блоги</a>
+        <a href="{% url 'blogs:profile' %}">Личный кабинет</a>
+    </div>
+{% endif %}
 
-    .main-wrapper {
-        display: flex;
-        gap: 20px;
-        align-items: flex-start;
-    }
+<h1>Все блоги</h1>
 
-    .sidebar {
-        width: 250px;
-        flex-shrink: 0;
-        background-color: #fafafa;
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 5px;
-    }
-
-    .content-area {
-        flex: 1;
-    }
-
-    /* Стили для тематических блоков */
-    .theme-blocks {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    .theme-block {
-        flex: 1;
-        background-color: #fff9c4;
-        padding: 15px;
-        text-align: center;
-        border-radius: 5px;
-    }
-    .theme-block a {
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
-    }
-    .theme-block a:hover {
-        color: #555;
-    }
-</style>
-
-<!-- Заголовок -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h1 style="margin: 0;">Все блоги</h1>
+<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <div style="flex: 1; background-color: #fff9c4; padding: 15px; text-align: center; border-radius: 5px;">
+        <a href="?region=africa" style="text-decoration: none; color: #333; font-weight: bold;">Африка</a>
+    </div>
+    <div style="flex: 1; background-color: #fff9c4; padding: 15px; text-align: center; border-radius: 5px;">
+        <a href="?region=australia" style="text-decoration: none; color: #333; font-weight: bold;">Австралия</a>
+    </div>
+    <div style="flex: 1; background-color: #fff9c4; padding: 15px; text-align: center; border-radius: 5px;">
+        <a href="?region=america" style="text-decoration: none; color: #333; font-weight: bold;">Америка</a>
+    </div>
+    <div style="flex: 1; background-color: #fff9c4; padding: 15px; text-align: center; border-radius: 5px;">
+        <a href="?region=europe" style="text-decoration: none; color: #333; font-weight: bold;">Европа</a>
+    </div>
+    <div style="flex: 1; background-color: #fff9c4; padding: 15px; text-align: center; border-radius: 5px;">
+        <a href="?region=antarctica" style="text-decoration: none; color: #333; font-weight: bold;">Антарктика</a>
+    </div>
 </div>
 
-<!-- Две колонки: реклама слева, контент справа -->
-<div class="main-wrapper">
-
-    <!-- Рекламная колонка -->
-    <div class="sidebar">
-        <h3>Реклама</h3>
-        <p>Здесь будет реклама.</p>
-    </div>
-
-    <!-- Основной контент -->
-    <div class="content-area">
-
-        <!-- Тематические блоки -->
-        <div class="theme-blocks">
-            <div class="theme-block">
-                <a href="?region=africa">Африка</a>
-            </div>
-            <div class="theme-block">
-                <a href="?region=australia">Австралия</a>
-            </div>
-            <div class="theme-block">
-                <a href="?region=america">Америка</a>
-            </div>
-            <div class="theme-block">
-                <a href="?region=europe">Европа</a>
-            </div>
-            <div class="theme-block">
-                <a href="?region=antarctica">Антарктика</a>
-            </div>
-        </div>
-
-        <!-- Список блогов -->
-        <ul>
-            {% for blog in blogs %}
-                <li style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                    {% if blog.image %}
-                        <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="width: 60px; height: 60px; object-fit: cover;">
-                    {% else %}
-                        <div style="width: 60px; height: 60px; background-color: #ddd;"></div>
-                    {% endif %}
-                    <div>
-                        <a href="{{ blog.get_absolute_url }}" style="font-size: 18px; font-weight: bold;">{{ blog.title }}</a>
-                        <br>
-                        <small>Автор: {{ blog.owner.username }} · Записей: {{ blog.posts.count }}</small>
-                    </div>
-                </li>
-            {% empty %}
-                <li>Пока нет ни одного блога. Создайте свой первый блог!</li>
-            {% endfor %}
-        </ul>
-
-        <!-- Пагинация -->
-        {% if is_paginated %}
-        <div style="margin-top: 20px; text-align: center;">
-            {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none;">← Предыдущая</a>
+<ul>
+    {% for blog in blogs %}
+        <li style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;">
+            {% if blog.image %}
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
+            {% else %}
+                <div style="width: 80px; height: 80px; background-color: #ddd; flex-shrink: 0;"></div>
             {% endif %}
-            <span style="margin: 0 10px;">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none;">Следующая →</a>
-            {% endif %}
-        </div>
+            <div>
+                <h2 style="margin: 0;"><a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a></h2>
+                <p style="margin: 5px 0;">{{ blog.description|truncatewords:30 }}</p>
+                <p style="margin: 5px 0; color: #666;">
+                    Просмотров: {{ blog.views }} · Лайков: {{ blog.likes.count }} · Комментариев: {{ blog.comments.count }}
+                </p>
+            </div>
+        </li>
+    {% empty %}
+        <li>Пока нет ни одного блога. Создайте свой первый блог!</li>
+    {% endfor %}
+</ul>
+
+{% if is_paginated %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none;">← Предыдущая</a>
         {% endif %}
-
+        <span style="margin: 0 10px;">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none;">Следующая →</a>
+        {% endif %}
     </div>
-
-</div>
+{% endif %}
 
 {% endblock %}

@@ -1,33 +1,80 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if blog.image %}
-    <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 0px; vertical-align: middle; margin-right: 15px;">
-{% endif %}
-<h1 style="display: inline-block; vertical-align: middle;">{{ blog.title }}</h1>
-<p>{{ blog.description }}</p>
-<p>Автор: {{ blog.owner.username }}</p>
+    <h1>{{ blog.title }}</h1>
 
-<h2>Записи</h2>
+    {% if blog.image %}
+        <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="max-width: 100%; border-radius: 5px; margin-bottom: 15px;">
+    {% endif %}
 
-{% if user == blog.owner %}
-    <p>
-        <a href="{% url 'blogs:blog_edit' blog.slug %}">Редактировать блог</a>
-        |
-        <a href="{% url 'blogs:post_create' %}">Добавить запись</a>
-        |
-        <a href="{% url 'blogs:blog_delete' blog.slug %}" style="color: red;">Удалить блог</a>
-    </p>
-	
-<ul>
-    {% for post in posts %}
-        <li>
-            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-            <small>{{ post.created_at }}</small>
-        </li>
-    {% empty %}
-        <li>В этом блоге пока нет записей.</li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <p>{{ blog.description }}</p>
+    <div>{{ blog.content|linebreaks }}</div>
+
+    <p>Просмотров: {{ blog.views }}</p>
+    <p>Лайков: {{ blog.likes.count }}</p>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'blogs:blog_like' blog.slug %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" style="background-color: {% if liked %}#dc3545{% else %}#007bff{% endif %}; border: none; padding: 8px 15px; color: white; border-radius: 5px; cursor: pointer;">
+                {% if liked %}Убрать лайк{% else %}Нравится{% endif %}
+            </button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Войдите</a>, чтобы поставить лайк.</p>
+    {% endif %}
+
+    {% if blog.likes.all %}
+        <p style="margin-top: 10px; color: #666;">
+            Нравится:
+            {% for like in blog.likes.all %}
+                {{ like.user.username }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    {% else %}
+        <p style="margin-top: 10px; color: #999;">Пока никто не лайкнул</p>
+    {% endif %}
+
+    {% if user == blog.owner %}
+        <p style="margin-top: 20px;">
+            <a href="{% url 'blogs:blog_edit' blog.slug %}">Редактировать блог</a> |
+            <a href="{% url 'blogs:blog_delete' blog.slug %}" style="color: red;">Удалить блог</a>
+        </p>
+    {% endif %}
+
+    <h2>Комментарии</h2>
+    <ul>
+        {% for comment in blog.comments.all %}
+            <li style="display: flex; gap: 10px; margin-bottom: 10px;">
+                {% if comment.author_avatar %}
+                    <img src="{{ comment.author_avatar }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background-color: #ddd; flex-shrink: 0;"></div>
+                {% endif %}
+                <div>
+                    <strong>{{ comment.author.username }}</strong> ({{ comment.created_at }}):
+                    <p>{{ comment.text|linebreaks }}</p>
+                    {% if user == comment.author %}
+                        <p>
+                            <a href="{% url 'blogs:comment_update' comment.pk %}">Редактировать</a> |
+                            <a href="{% url 'blogs:comment_delete' comment.pk %}" style="color: red;">Удалить</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </li>
+        {% empty %}
+            <li>Комментариев пока нет. Будьте первым!</li>
+        {% endfor %}
+    </ul>
+
+    {% if user.is_authenticated %}
+        <h3>Добавить комментарий</h3>
+        <form method="post" action="{% url 'blogs:blog_comment' blog.slug %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Отправить</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий.</p>
+    {% endif %}
 {% endblock %}
